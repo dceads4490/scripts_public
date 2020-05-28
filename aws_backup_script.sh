@@ -21,7 +21,7 @@ AWS_BUCKET="Your aws-bucket for backup"
 for ldir in "${dir_list[@]}"
 do
    echo "Going to backup up '${ldir}'"
-   rsync -av "${ldir}" "${BACKUP_DEPOT}"
+   rsync -av --exclude=".*" "${ldir}" "${BACKUP_DEPOT}"
    # log the failure but continue
    if [[ $? -ne 0 ]] 
       then
