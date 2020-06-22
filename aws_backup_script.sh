@@ -7,7 +7,11 @@
 #  - After the first run, only changes are copied. 
 #
 # I use a cron entry as follows to pipe the output to a log file that I can check occassionally.
-04  01  * * * /home/my_user/projects/scripts/aws_backup_script.sh >> /home/my_user/my_user-backup.log 2>&1
+#04  01  * * * /home/my_user/projects/scripts/aws_backup_script.sh >> /home/my_user/my_user-backup.log 2>&1
+
+# Log start time
+current_time=$(date)
+echo "${current_time}| Starting"
 
 # Create array with directories to be backed up.
 # Add directory names with complete path in double quotes
@@ -20,7 +24,8 @@ AWS_BUCKET="Your aws-bucket for backup"
 # Loop through dir_list and rsync each directory
 for ldir in "${dir_list[@]}"
 do
-   echo "Going to backup up '${ldir}'"
+   current_time=$(date)
+   echo "${current_time}| Going to backup up '${ldir}'"
    rsync -av --exclude=".*" "${ldir}" "${BACKUP_DEPOT}"
    # log the failure but continue
    if [[ $? -ne 0 ]] 
@@ -30,6 +35,11 @@ do
 done
 
 # sync changes to AWS
-echo "Going to start aws s3 sync"
+current_time=$(date)
+echo "${current_time}| Going to start aws s3 sync"
 # You have to run "aws configure" before this command will work
 aws s3 sync "${BACKUP_DEPOT}" s3://${AWS_BUCKET}/
+
+# Log Finished
+current_time=$(date)
+echo "${current_time}| Finished"
